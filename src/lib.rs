@@ -534,7 +534,36 @@ fn check_parse_keta_3() {
 
 #[test]
 fn check_parse_keta_4() {
-    let mut chars = "百ほ万一".chars().peekable();
+    let mut chars = "百に万一".chars().peekable();
     let keta = parse_keta(&mut chars);
     assert!(keta.is_err())
 }
+
+#[test]
+fn check_parse_keta_5() {
+    let mut chars = "百二万一".chars().peekable();
+    let keta = parse_keta(&mut chars);
+    assert_eq!(
+        keta,
+        Ok(KansujiKeta {
+            千: KansujiField::零,
+            百: KansujiField::一,
+            十: KansujiField::零,
+            一: KansujiField::二
+        })
+    );
+    chars.next();
+    let keta = parse_keta(&mut chars);
+    assert_eq!(
+        keta,
+        Ok(KansujiKeta {
+            千: KansujiField::零,
+            百: KansujiField::零,
+            十: KansujiField::零,
+            一: KansujiField::一
+        })
+    )
+}
+
+
+
