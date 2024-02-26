@@ -6,6 +6,22 @@
 //!
 //! なお、大字をどこまでサポートするかは今後決めるものとする。
 //!
+//! # 使い方
+//!
+//! 数字と文字列との間にFromトレイトとTryFromトレイト、ToStringトレイトを元にした相互変換を実現している。
+//! ただし、オーバーフローの関係で漢数字から数字への変換はu128およびf64, f32へのみ対応している。
+//!
+//! ```
+//! use kansuji::Kansuji;
+//!
+//! let s = "百二十三兆五百四十万二";
+//! let kansuji = Kansuji::try_from(s).unwrap();
+//! let n: u128 = kansuji.into();
+//! assert_eq!(n, 123000005400002);
+//! let kansuji2 = Kansuji::from(n);
+//! assert_eq!(s.to_string(), kansuji2.to_string());
+//! ```
+//!
 
 use std::convert::{From, TryFrom};
 use std::string::String;
