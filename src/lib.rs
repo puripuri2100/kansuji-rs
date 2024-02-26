@@ -21,6 +21,11 @@
 //! let kansuji2 = Kansuji::from(n);
 //! assert_eq!(s.to_string(), kansuji2.to_string());
 //! ```
+//!---
+
+//! [The MIT License](https://github.com/puripuri2100/kansuji-rs/blob/master/LICENSE)
+//!
+//! Copyright (c) 2024 Naoki Kaneko (a.k.a. "puripuri2100")
 //!
 
 use std::convert::{From, TryFrom};
