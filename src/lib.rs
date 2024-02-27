@@ -92,6 +92,21 @@ impl KansujiField {
             KansujiField::九 => "九".to_string(),
         }
     }
+
+    fn to_str2(self) -> String {
+        match self {
+            KansujiField::零 => String::new(),
+            KansujiField::一 => "一".to_string(),
+            KansujiField::二 => "二".to_string(),
+            KansujiField::三 => "三".to_string(),
+            KansujiField::四 => "四".to_string(),
+            KansujiField::五 => "五".to_string(),
+            KansujiField::六 => "六".to_string(),
+            KansujiField::七 => "七".to_string(),
+            KansujiField::八 => "八".to_string(),
+            KansujiField::九 => "九".to_string(),
+        }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -129,7 +144,7 @@ impl ToString for KansujiKeta {
         if self.十 != KansujiField::零 {
             s.push_str(&format!("{}十", self.十.to_str()))
         }
-        s.push_str(&self.一.to_str());
+        s.push_str(&self.一.to_str2());
         s
     }
 }
@@ -646,6 +661,36 @@ fn check_parse_keta_5() {
     )
 }
 
+#[test]
+fn check_parse_keta_6() {
+    let mut chars = "五百".chars().peekable();
+    let keta = parse_keta(&mut chars);
+    assert_eq!(
+        keta,
+        Ok(KansujiKeta {
+            千: KansujiField::零,
+            百: KansujiField::五,
+            十: KansujiField::零,
+            一: KansujiField::零
+        })
+    );
+}
+
+#[test]
+fn check_parse_keta_7() {
+    let mut chars = "五百一".chars().peekable();
+    let keta = parse_keta(&mut chars);
+    assert_eq!(
+        keta,
+        Ok(KansujiKeta {
+            千: KansujiField::零,
+            百: KansujiField::五,
+            十: KansujiField::零,
+            一: KansujiField::一
+        })
+    )
+}
+
 impl From<Kansuji> for f64 {
     fn from(value: Kansuji) -> Self {
         let mut n = 0;
@@ -936,13 +981,13 @@ impl ToString for Kansuji {
             s.push_str(&self.一.to_string())
         }
         if self.分 != KansujiField::零 {
-            s.push_str(&format!("{}分", self.分.to_str()))
+            s.push_str(&format!("{}分", self.分.to_str2()))
         }
         if self.厘 != KansujiField::零 {
-            s.push_str(&format!("{}厘", self.厘.to_str()))
+            s.push_str(&format!("{}厘", self.厘.to_str2()))
         }
         if self.毛 != KansujiField::零 {
-            s.push_str(&format!("{}毛", self.毛.to_str()))
+            s.push_str(&format!("{}毛", self.毛.to_str2()))
         }
         s
     }
@@ -959,7 +1004,9 @@ fn check_kansuji_1() {
         assert_eq!(s, new_kansuji.unwrap().to_string());
     }
 
-    let v = vec![0, 1, 2, 3, 10, 11, 15, 200, 76492334, 764923341, 1999999];
+    let v = vec![
+        0, 1, 2, 3, 10, 11, 15, 200, 210501, 76492334, 764923341, 1999999,
+    ];
     let _ = v.iter().map(kansuji_test_function);
 }
 
@@ -977,4 +1024,54 @@ fn check_kansuji_3() {
     let kansuji = Kansuji::from(f);
     let s = kansuji.to_string();
     assert_eq!(s, "一二分三毛".to_string());
+}
+
+#[test]
+fn check_kansuji_5() {
+    let n: usize = 210501;
+    let s = "二十一万五百一";
+    let kansuji = Kansuji::try_from(s).unwrap();
+    assert_eq!(
+        kansuji,
+        Kansuji {
+            万: KansujiKeta {
+                十: KansujiField::二,
+                一: KansujiField::一,
+                ..KansujiKeta::default()
+            },
+            一: KansujiKeta {
+                百: KansujiField::五,
+                一: KansujiField::一,
+                ..KansujiKeta::default()
+            },
+            ..Kansuji::default()
+        }
+    );
+    assert_eq!(Kansuji::from(n), kansuji);
+    let s2 = kansuji.to_string();
+    assert_eq!(s, s2);
+}
+
+#[test]
+fn check_kansuji_6() {
+    let n: usize = 200500;
+    let s = "二十万五百";
+    let kansuji = Kansuji::try_from(s).unwrap();
+    assert_eq!(
+        kansuji,
+        Kansuji {
+            万: KansujiKeta {
+                十: KansujiField::二,
+                ..KansujiKeta::default()
+            },
+            一: KansujiKeta {
+                百: KansujiField::五,
+                ..KansujiKeta::default()
+            },
+            ..Kansuji::default()
+        }
+    );
+    assert_eq!(Kansuji::from(n), kansuji);
+    let s2 = kansuji.to_string();
+    assert_eq!(s, s2);
 }
