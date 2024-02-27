@@ -850,11 +850,20 @@ impl From<f64> for Kansuji {
         let oku = (n % 1000000000000) / 100000000;
         let man = (n % 100000000) / 10000;
         let iti = n % 10000;
-        let f = value - (n as f64);
-        let f = (f * 1000.0) as usize;
-        let bu = f / 100;
-        let rin = (f % 100) / 10;
-        let mou = f % 10;
+        let f_str = value.to_string();
+        let mut f_chars = f_str.split('.').nth(1).unwrap_or_default().chars();
+        let bu = f_chars
+            .next()
+            .and_then(|c| c.to_string().parse::<u8>().ok())
+            .unwrap_or_default();
+        let rin = f_chars
+            .next()
+            .and_then(|c| c.to_string().parse::<u8>().ok())
+            .unwrap_or_default();
+        let mou = f_chars
+            .next()
+            .and_then(|c| c.to_string().parse::<u8>().ok())
+            .unwrap_or_default();
         Kansuji {
             垓: KansujiKeta::from(gai as usize),
             京: KansujiKeta::from(kei as usize),
@@ -862,9 +871,9 @@ impl From<f64> for Kansuji {
             億: KansujiKeta::from(oku as usize),
             万: KansujiKeta::from(man as usize),
             一: KansujiKeta::from(iti as usize),
-            分: KansujiField::from_int(bu as u8),
-            厘: KansujiField::from_int(rin as u8),
-            毛: KansujiField::from_int(mou as u8),
+            分: KansujiField::from_int(bu),
+            厘: KansujiField::from_int(rin),
+            毛: KansujiField::from_int(mou),
         }
     }
 }
@@ -1024,6 +1033,22 @@ fn check_kansuji_3() {
     let kansuji = Kansuji::from(f);
     let s = kansuji.to_string();
     assert_eq!(s, "一二分三毛".to_string());
+}
+
+#[test]
+fn check_kansuji_4() {
+    let f = 1.204;
+    let kansuji = Kansuji::from(f);
+    let s = kansuji.to_string();
+    assert_eq!(s, "一二分四毛".to_string());
+}
+
+#[test]
+fn check_kansuji_4_2() {
+    let f = 3.456;
+    let kansuji = Kansuji::from(f);
+    let s = kansuji.to_string();
+    assert_eq!(s, "三四分五厘六毛".to_string());
 }
 
 #[test]
